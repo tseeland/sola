@@ -43,7 +43,6 @@ struct ReceivedOrder {};
 struct ReachedTarget {};
 struct LoadedPayload {};
 struct UnloadedPayload {};
-struct ChargedBattery {};
 
 /// @brief Manages communication with the corresponding logical agent and execution of transport
 /// orders
@@ -95,7 +94,6 @@ private:
   bool holdsMoveType(const FunctionalityVariant &f) const;
 
   // fsmlite actions
-  template <typename T> void charge(const T &t);
   template <typename T> void execute(const T &t);
   template <typename T> void finish(const T &t);
 
@@ -116,11 +114,9 @@ private:
   // fsmlite guards
   template <typename T> bool isMoveToLoad(const T &t) const;
   template <typename T> bool isMoveToUnload(const T &t) const;
-  template <typename T> bool isMoveToCharge(const T &t) const;
   template <typename T> bool isMove(const T &t) const;
   template <typename T> bool isLoad(const T &t) const;
   template <typename T> bool isUnload(const T &t) const;
-  template <typename T> bool isCharge(const T &t) const;
   template <typename T> bool isFinish(const T &t) const;
 
   using m = AmrPhysicalAsset;

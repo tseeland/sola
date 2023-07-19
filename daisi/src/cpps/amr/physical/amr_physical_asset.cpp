@@ -60,8 +60,6 @@ void AmrPhysicalAsset::updateFunctionality(const FunctionalityVariant &functiona
     process_event(LoadedPayload());
   else if (std::holds_alternative<Unload>(functionality))
     process_event(UnloadedPayload());
-  else if (std::holds_alternative<Charge>(functionality))
-    process_event(ChargedBattery());
   sendOrderUpdateNs3();
 }
 
@@ -153,14 +151,6 @@ bool AmrPhysicalAsset::holdsMoveType(const FunctionalityVariant &f) const {
 // fsmlite actions //
 /////////////////////
 
-template <typename T> void AmrPhysicalAsset::charge(const T &t) {
-  amr_state_ = AmrState::kCharging;
-  executeFrontFunctionality();
-  if constexpr (std::is_same_v<ReceivedOrder, T>) {
-    startVehicleStatusUpdates();
-  }
-}
-
 template <typename T> void AmrPhysicalAsset::execute(const T &t) {
   amr_state_ = AmrState::kWorking;
   executeFrontFunctionality();
@@ -192,11 +182,6 @@ template <typename T> bool AmrPhysicalAsset::isMoveToUnload(const T &t) const {
          std::holds_alternative<Unload>(functionality_queue_.at(1));
 }
 
-template <typename T> bool AmrPhysicalAsset::isMoveToCharge(const T &t) const {
-  return holdsMoveType(functionality_queue_.front()) &&
-         std::holds_alternative<Charge>(functionality_queue_.at(1));
-}
-
 template <typename T> bool AmrPhysicalAsset::isMove(const T &t) const {
   return holdsMoveType(functionality_queue_.front()) &&
          (functionality_queue_.size() == 1 || holdsMoveType(functionality_queue_.at(1)));
@@ -209,10 +194,6 @@ template <typename T> bool AmrPhysicalAsset::isLoad(const T &t) const {
 template <typename T> bool AmrPhysicalAsset::isUnload(const T &t) const {
   return std::holds_alternative<Unload>(functionality_queue_.front());
 }
-
-// template <typename T> bool AmrPhysicalAsset::isCharge(const T &t) const {
-//   return std::holds_alternative<Charge>(functionality_queue_.front());
-// }
 
 template <typename T> bool AmrPhysicalAsset::isFinish(const T &t) const {
   return functionality_queue_.empty();
